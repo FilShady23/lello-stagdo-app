@@ -37,7 +37,7 @@ const BADGES = [
 // =============================================
 window.handleLogin = function() {
   const input = document.getElementById("usernameInput");
-  const name = input.value.trim();
+  const name = input.value.trim().charAt(0).toUpperCase() + input.value.trim().slice(1).toLowerCase();
   if (!name) {
     input.focus();
     return;
