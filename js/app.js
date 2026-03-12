@@ -1,7 +1,8 @@
 // app.js — Logica principale dell'app (ES Module)
 import {
   db, collection, addDoc, onSnapshot,
-  query, where, doc, setDoc, updateDoc, increment
+  query, where, doc, setDoc, updateDoc, increment,
+  getDocs, deleteDoc
 } from "./firebase.js";
 
 // =============================================
@@ -159,7 +160,6 @@ window.toggleMission = async function(missionId, missionTitle) {
       showToast("🏆 +10 XP — Missione completata!");
     } else {
       // ANNULLA — elimina il documento corrispondente
-      const { getDocs, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
       const q = query(
         collection(db, "missions"),
         where("user", "==", currentUser),
