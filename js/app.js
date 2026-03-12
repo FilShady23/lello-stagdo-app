@@ -1,7 +1,7 @@
 // app.js — Logica principale dell'app (ES Module)
 import {
   db, collection, addDoc, onSnapshot,
-  query, where, getDocs, deleteDoc, doc, setDoc, updateDoc, increment
+  query, where, doc, setDoc, updateDoc, increment
 } from "./firebase.js";
 
 // =============================================
@@ -113,9 +113,12 @@ function loadMissions() {
   onSnapshot(q, snapshot => {
     completedMissions.clear();
     snapshot.forEach(doc => completedMissions.add(doc.data().missionId));
-    updateMissionUI();
-    updateTopbarXP();
-    updateBadges();
+    // Defer so outerHTML replacement settles before we re-query buttons
+    setTimeout(() => {
+      updateMissionUI();
+      updateTopbarXP();
+      updateBadges();
+    }, 0);
   });
 }
 
@@ -143,9 +146,8 @@ function updateMissionUI() {
 // TOGGLE MISSIONE (completa o annulla)
 // =============================================
 window.toggleMission = async function(missionId, missionTitle) {
-  // Disabilita il bottone subito per evitare doppi click
   const btn = document.querySelector(`#mission-${missionId} .mission-btn`);
-  if (btn) btn.disabled = true;
+  if (btn) { btn.textContent = "..."; btn.disabled = true; }
 
   try {
     if (!completedMissions.has(missionId)) {
@@ -160,22 +162,21 @@ window.toggleMission = async function(missionId, missionTitle) {
       showToast("🏆 +10 XP — Missione completata!");
     } else {
       // ANNULLA — elimina il documento corrispondente
+      const { getDocs, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
       const q = query(
         collection(db, "missions"),
         where("user", "==", currentUser),
         where("missionId", "==", missionId)
       );
       const snap = await getDocs(q);
-      await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+      const deletes = snap.docs.map(d => deleteDoc(d.ref));
+      await Promise.all(deletes);
       showToast("↩ Missione annullata — -10 XP");
     }
-    // Non toccare il bottone qui — ci pensa onSnapshot → updateMissionUI
   } catch (e) {
     console.error(e);
     showToast("❌ Errore, riprova");
-    // Riabilita solo in caso di errore
-    const btnRetry = document.querySelector(`#mission-${missionId} .mission-btn`);
-    if (btnRetry) btnRetry.disabled = false;
+    if (btn) { btn.disabled = false; }
   }
 };
 
@@ -184,8 +185,7 @@ window.toggleMission = async function(missionId, missionTitle) {
 // =============================================
 window.addBeer = async function() {
   const btn = document.querySelector(".beer-add-btn");
-  if (btn) { btn.textContent = "🍺 ..."; btn.disabled = true; }
-
+  if (btn) btn.disabled = true;
   try {
     await addDoc(collection(db, "beer"), {
       user: currentUser,
@@ -197,7 +197,29 @@ window.addBeer = async function() {
     console.error(e);
     showToast("❌ Errore, riprova");
   } finally {
-    if (btn) { btn.textContent = "🍺 +1 Guinness"; btn.disabled = false; }
+    if (btn) btn.disabled = false;
+  }
+};
+
+window.removeBeer = async function() {
+  const count = parseInt(document.getElementById("myBeerCount").textContent) || 0;
+  if (count <= 0) { showToast("🍺 Sei già a zero!"); return; }
+  const btn = document.querySelector(".beer-remove-btn");
+  if (btn) btn.disabled = true;
+  try {
+    // Trova l'ultimo documento beer di questo utente e lo elimina
+    const q = query(collection(db, "beer"), where("user", "==", currentUser));
+    const snap = await getDocs(q);
+    if (snap.empty) { showToast("🍺 Nessuna birra da rimuovere"); return; }
+    // Prendi l'ultimo aggiunto (massimo time)
+    const sorted = snap.docs.sort((a, b) => b.data().time - a.data().time);
+    await deleteDoc(sorted[0].ref);
+    showToast("↩ -1 Guinness rimossa");
+  } catch (e) {
+    console.error(e);
+    showToast("❌ Errore, riprova");
+  } finally {
+    if (btn) btn.disabled = false;
   }
 };
 
