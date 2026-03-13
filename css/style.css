@@ -825,3 +825,100 @@ button:focus-visible { outline: 2px solid var(--shamrock); outline-offset: 3px; 
 .leaderboard-list .leader-item:nth-child(5) { animation-delay: 0.20s; }
 .leaderboard-list .leader-item:nth-child(6) { animation-delay: 0.24s; }
 .leaderboard-list .leader-item:nth-child(7) { animation-delay: 0.28s; }
+
+/* =============================================
+   BADGE SECTION TITLES
+   ============================================= */
+.badge-section-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 2px;
+  margin: 20px 0 10px;
+  text-shadow: 0 0 8px rgba(212,160,23,0.3);
+}
+
+/* =============================================
+   BADGE BONUS
+   ============================================= */
+.badge-bonus {
+  display: none;
+  font-size: 11px;
+  color: var(--gold-bright);
+  font-weight: 700;
+  margin-top: 6px;
+  padding: 4px 8px;
+  background: rgba(250,204,21,0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(250,204,21,0.2);
+  line-height: 1.3;
+}
+
+.badge-bonus.visible { display: block; }
+
+/* =============================================
+   GROUP PENALTY PANEL
+   ============================================= */
+.penalty-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.penalty-icon { font-size: 36px; margin-bottom: 6px; }
+
+.penalty-label {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--shamrock);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.penalty-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.penalty-count strong { color: var(--gold-bright); }
+
+.penalty-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-bright);
+  background: rgba(250,204,21,0.08);
+  border: 1px solid rgba(250,204,21,0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  line-height: 1.4;
+}
+
+/* =============================================
+   BEER BUTTONS
+   ============================================= */
+.beer-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.beer-remove-btn {
+  min-height: 64px;
+  padding: 0 20px;
+  background: rgba(180,83,9,0.15);
+  color: #fb923c;
+  border: 1px solid rgba(180,83,9,0.35);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.beer-remove-btn:active { transform: scale(0.95) translateY(2px); }
