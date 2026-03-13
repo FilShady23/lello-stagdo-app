@@ -1,7 +1,7 @@
 // app.js — Logica principale dell'app (ES Module)
 import {
   db, collection, addDoc, onSnapshot,
-  query, where, getDocs, deleteDoc, doc, setDoc, updateDoc, increment
+  query, where, doc, setDoc, updateDoc, increment
 } from "./firebase.js";
 
 // =============================================
@@ -11,42 +11,25 @@ let currentUser = "";
 
 // Lista missioni
 const MISSIONS = [
-  { id: "m1",  title: "Parlare con 3 irlandesi", xp: 10 },
-  { id: "m2",  title: "Selfie davanti a Temple Bar", xp: 10 },
-  { id: "m3",  title: "Bere Guinness in 3 pub diversi", xp: 10 },
-  { id: "m4",  title: "Brindisi con degli sconosciuti", xp: 10 },
-  { id: "m5",  title: "Foto con un musicista di strada", xp: 10 },
-  { id: "m6",  title: "Imparare a dire 'Salute' in irlandese (Sláinte!)", xp: 10 },
-  { id: "m7",  title: "Ordinare da bere con un accento irlandese", xp: 10 },
-  { id: "m8",  title: "Fare una foto di gruppo in un pub", xp: 10 },
-  { id: "m9",  title: "Trovare qualcuno che si chiama Patrick", xp: 10 },
-  { id: "m10", title: "Cantare in un pub irlandese", xp: 10 },
-  { id: "m11", title: "Street performance di almeno 10 min — raccogliere almeno una moneta da sconosciuti (video stile spettatori casuali richiesto)", xp: 10 },
-  { id: "m12", title: "Baciare 3 uomini irlandesi sulla guancia (foto di prova richiesta)", xp: 10 },
-  { id: "m13", title: "Farsi baciare sulla guancia da 5 donne irlandesi (foto di prova richiesta)", xp: 10 },
-  { id: "m14", title: "Farsi una foto con la ragazza meno appariscente del locale — senza spezzarle il cuore", xp: 10 },
-  { id: "m15", title: "Trovare un addio al nubilato e farsi una foto insieme al gruppo", xp: 10 }
+  { id: "m1", title: "Parlare con 3 irlandesi", xp: 10 },
+  { id: "m2", title: "Selfie davanti Temple Bar", xp: 10 },
+  { id: "m3", title: "Bere Guinness in 3 pub diversi", xp: 10 },
+  { id: "m4", title: "Brindisi con degli sconosciuti", xp: 10 },
+  { id: "m5", title: "Foto con un musicista di strada", xp: 10 },
+  { id: "m6", title: "Offrire una Guinness a un barbone e farsi un selfie insieme", xp: 10 },
+  { id: "m7", title: "Far salire Lello sul palco o sul bancone di un pub a fare un discorso da sposo davanti ai presenti", xp: 10 },
+  { id: "m8", title: "Convincere una sconosciuta a scrivere 'Lello Stag Do' sulla guancia con un rossetto e farsi una foto", xp: 10 },
+  { id: "m9", title: "Trovare qualcuno che si chiama Patrick", xp: 10 },
+  { id: "m10", title: "Cantare in un pub irlandese", xp: 10 }
 ];
 
 // Badge definizioni
 const BADGES = [
-  { id: "rookie",   icon: "🍺", name: "Rookie",        desc: "3 Guinness",  bonus: "🎁 Lello ti offre una Guinness",             type: "beer",    threshold: 3  },
-  { id: "warrior",  icon: "🍺", name: "Warrior",       desc: "6 Guinness",  bonus: "🎁 Lello ti offre 2 Guinness",               type: "beer",    threshold: 6  },
-  { id: "veteran",  icon: "🍺", name: "Veteran",       desc: "10 Guinness", bonus: "🎁 Lello ti paga un giro di shots",          type: "beer",    threshold: 10 },
-  { id: "champion", icon: "🏆", name: "Champion",      desc: "14 Guinness", bonus: "🎁 Lello ti offre cocktail o cena a scelta", type: "beer",    threshold: 14 },
-  { id: "legend",   icon: "👑", name: "Living Legend", desc: "17 Guinness", bonus: "🎁 Lello ti porta in giro per una sera",     type: "beer",    threshold: 17 },
-  { id: "god",      icon: "🔱", name: "Guinness God",  desc: "20 Guinness", bonus: "🎁 Lello è tuo schiavo per un'ora",          type: "beer",    threshold: 20 },
-  { id: "hero",     icon: "🏆", name: "Mission Hero",  desc: "5 missioni",  bonus: "",                                           type: "mission", threshold: 5  },
-  { id: "spirit",   icon: "☘",  name: "Irish Spirit",  desc: "10 missioni", bonus: "",                                           type: "mission", threshold: 10 },
-  { id: "allstar",  icon: "⭐", name: "All Star",      desc: "15 missioni", bonus: "",                                           type: "mission", threshold: 15 }
-];
-
-// Soglie malus gruppo per le missioni (missioni TOTALI completate dal gruppo)
-const GROUP_PENALTIES = [
-  { min: 0,  max: 4,  icon: "💀", label: "Disastro totale",      penalty: "Tutto il gruppo fa uno shot davanti a Lello!" },
-  { min: 5,  max: 9,  icon: "😬", label: "Potevate fare meglio", penalty: "Tutti portano una Guinness a Lello!" },
-  { min: 10, max: 14, icon: "😅", label: "Quasi eroi",           penalty: "Tutti cantano 'Happy Birthday' a Lello in un pub!" },
-  { min: 15, max: 99, icon: "🏆", label: "Gruppo Leggendario",   penalty: "Nessun malus — siete dei campioni! 🎉" }
+  { id: "rookie",       icon: "🍺", name: "Rookie",       desc: "3 Guinness",    type: "beer",    threshold: 3 },
+  { id: "warrior",      icon: "🍺", name: "Warrior",      desc: "6 Guinness",    type: "beer",    threshold: 6 },
+  { id: "legend",       icon: "🍺", name: "Legend",       desc: "10 Guinness",   type: "beer",    threshold: 10 },
+  { id: "hero",         icon: "🏆", name: "Mission Hero", desc: "5 missioni",    type: "mission", threshold: 5 },
+  { id: "spirit",       icon: "☘",  name: "Irish Spirit", desc: "Tutte le missioni", type: "mission", threshold: 10 }
 ];
 
 // =============================================
@@ -147,10 +130,14 @@ function updateMissionUI() {
     if (!btn) return;
     if (completedMissions.has(m.id)) {
       li.classList.add("done");
-      btn.outerHTML = `<button class="mission-btn undo-btn" onclick="toggleMission('${m.id}', '${m.title}')">↩ Annulla</button>`;
+      btn.textContent = "↩ Annulla";
+      btn.className = "mission-btn undo-btn";
+      btn.onclick = () => toggleMission(m.id, m.title);
     } else {
       li.classList.remove("done");
-      btn.outerHTML = `<button class="mission-btn" onclick="toggleMission('${m.id}', '${m.title}')">✔ Fatto</button>`;
+      btn.textContent = "✔ Fatto";
+      btn.className = "mission-btn";
+      btn.onclick = () => toggleMission(m.id, m.title);
     }
   });
 }
@@ -160,9 +147,11 @@ function updateMissionUI() {
 // =============================================
 window.toggleMission = async function(missionId, missionTitle) {
   const btn = document.querySelector(`#mission-${missionId} .mission-btn`);
-  if (btn) btn.disabled = true;
+  if (btn) { btn.textContent = "..."; btn.disabled = true; }
+
   try {
     if (!completedMissions.has(missionId)) {
+      // COMPLETA — aggiungi documento
       await addDoc(collection(db, "missions"), {
         user: currentUser,
         missionId: missionId,
@@ -172,16 +161,22 @@ window.toggleMission = async function(missionId, missionTitle) {
       });
       showToast("🏆 +10 XP — Missione completata!");
     } else {
-      const q = query(collection(db, "missions"), where("user", "==", currentUser), where("missionId", "==", missionId));
+      // ANNULLA — elimina il documento corrispondente
+      const { getDocs, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+      const q = query(
+        collection(db, "missions"),
+        where("user", "==", currentUser),
+        where("missionId", "==", missionId)
+      );
       const snap = await getDocs(q);
-      await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+      const deletes = snap.docs.map(d => deleteDoc(d.ref));
+      await Promise.all(deletes);
       showToast("↩ Missione annullata — -10 XP");
     }
   } catch (e) {
     console.error(e);
     showToast("❌ Errore, riprova");
-    const btnRetry = document.querySelector(`#mission-${missionId} .mission-btn`);
-    if (btnRetry) btnRetry.disabled = false;
+    if (btn) { btn.disabled = false; }
   }
 };
 
@@ -240,15 +235,11 @@ function initLeaderboards() {
 
   onSnapshot(collection(db, "missions"), snapshot => {
     missionScores = {};
-    // conta missioni uniche completate dal gruppo (deduplicato per missionId)
-    const completedByGroup = new Set();
     snapshot.forEach(d => {
       const data = d.data();
       missionScores[data.user] = (missionScores[data.user] || 0) + 10;
-      if (data.missionId) completedByGroup.add(data.missionId);
     });
     renderXPLeaderboard(missionScores, beerScores);
-    renderGroupPenalty(completedByGroup.size);
   });
 
   onSnapshot(collection(db, "beer"), snapshot => {
@@ -337,13 +328,9 @@ function updateTopbarXP() {
 // BADGES
 // =============================================
 function getBadgeIcon(beers, missions) {
-  if (beers >= 20) return "🔱 Guinness God";
-  if (beers >= 17) return "👑 Living Legend";
-  if (beers >= 14) return "🏆 Champion";
-  if (beers >= 10) return "🍺 Veteran";
+  if (beers >= 10) return "🍺 Legend";
   if (beers >= 6)  return "🍺 Warrior";
   if (beers >= 3)  return "🍺 Rookie";
-  if (missions >= 15) return "⭐ All Star";
   if (missions >= 10) return "☘ Irish Spirit";
   if (missions >= 5)  return "🏆 Mission Hero";
   return "";
@@ -355,41 +342,9 @@ function updateBadges() {
   const grid = document.getElementById("myBadges");
   grid.innerHTML = "";
 
-  // Badge personali birre
-  const beerBadges = BADGES.filter(b => b.type === "beer");
-  const missionBadges = BADGES.filter(b => b.type === "mission");
-
-  const beerTitle = document.createElement("h4");
-  beerTitle.className = "badge-section-title";
-  beerTitle.textContent = "🍺 I tuoi Badge Guinness";
-  grid.appendChild(beerTitle);
-
-  const beerGrid = document.createElement("div");
-  beerGrid.className = "badges-grid";
-  beerBadges.forEach(b => {
-    const unlocked = beerCount >= b.threshold;
-    const card = document.createElement("div");
-    card.className = "badge-card " + (unlocked ? "unlocked" : "locked");
-    card.innerHTML = `
-      <div class="badge-icon">${b.icon}</div>
-      <div class="badge-name">${b.name}</div>
-      <div class="badge-cond">${b.desc}</div>
-      ${b.bonus ? `<div class="badge-bonus ${unlocked ? "visible" : ""}">${b.bonus}</div>` : ""}
-    `;
-    beerGrid.appendChild(card);
-  });
-  grid.appendChild(beerGrid);
-
-  // Badge missioni gruppo
-  const missionTitle = document.createElement("h4");
-  missionTitle.className = "badge-section-title";
-  missionTitle.textContent = "☘ Badge Missioni";
-  grid.appendChild(missionTitle);
-
-  const missionGrid = document.createElement("div");
-  missionGrid.className = "badges-grid";
-  missionBadges.forEach(b => {
-    const unlocked = missionCount >= b.threshold;
+  BADGES.forEach(b => {
+    const current = b.type === "beer" ? beerCount : missionCount;
+    const unlocked = current >= b.threshold;
     const card = document.createElement("div");
     card.className = "badge-card " + (unlocked ? "unlocked" : "locked");
     card.innerHTML = `
@@ -397,22 +352,8 @@ function updateBadges() {
       <div class="badge-name">${b.name}</div>
       <div class="badge-cond">${b.desc}</div>
     `;
-    missionGrid.appendChild(card);
+    grid.appendChild(card);
   });
-  grid.appendChild(missionGrid);
-}
-
-function renderGroupPenalty(totalGroupMissions) {
-  const panel = document.getElementById("groupPenaltyPanel");
-  if (!panel) return;
-  const p = GROUP_PENALTIES.find(g => totalGroupMissions >= g.min && totalGroupMissions <= g.max)
-         || GROUP_PENALTIES[GROUP_PENALTIES.length - 1];
-  panel.innerHTML = `
-    <div class="penalty-icon">${p.icon}</div>
-    <div class="penalty-label">${p.label}</div>
-    <div class="penalty-count">Missioni completate dal gruppo: <strong>${totalGroupMissions}</strong> / 15</div>
-    <div class="penalty-text">${p.penalty}</div>
-  `;
 }
 
 // =============================================
