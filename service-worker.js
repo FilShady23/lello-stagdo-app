@@ -1,5 +1,5 @@
 // service-worker.js — PWA Cache
-const CACHE_NAME = "stagdo-v6";
+const CACHE_NAME = "stagdo-v7";
 const ASSETS = [
   "/",
   "/index.html",
