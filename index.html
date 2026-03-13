@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="StagDo">
+  <title>☘ Lello Stag Do</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <meta name="theme-color" content="#050c08">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div id="loginScreen" class="screen active">
+    <div class="login-container">
+      <div class="logo-area">
+        <span class="logo-shamrock">☘</span>
+        <h1 class="logo-title">LELLO<br>STAG DO</h1>
+        <p class="logo-subtitle">✦ DUBLIN 2025 ✦</p>
+      </div>
+      <div class="login-card">
+        <p class="login-label">inserisci il tuo nome</p>
+        <input id="usernameInput" type="text" placeholder="Es. Marco, Luca..." maxlength="20" autocomplete="off" autocorrect="off" spellcheck="false">
+        <button id="loginBtn" onclick="handleLogin()">☘ ENTRA NEL GIOCO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MAIN APP ===== -->
+  <div id="mainApp" class="screen">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="topbar-shamrock">☘</span>
+        <span class="topbar-name" id="topbarName">Player</span>
+      </div>
+      <div class="topbar-center">
+        <span class="topbar-xp-value" id="topbarXP">0</span>
+        <span class="topbar-xp-label">XP</span>
+      </div>
+      <div class="topbar-badge" id="topbarBadge"></div>
+    </header>
+
+    <!-- NAV TABS -->
+    <nav class="tabs">
+      <button class="tab active" onclick="showTab('missions')" data-tab="missions">
+        <span class="tab-icon">📋</span>
+        <span>Missioni</span>
+      </button>
+      <button class="tab" onclick="showTab('beer')" data-tab="beer">
+        <span class="tab-icon">🍺</span>
+        <span>Guinness</span>
+      </button>
+      <button class="tab" onclick="showTab('leaderboard')" data-tab="leaderboard">
+        <span class="tab-icon">🏆</span>
+        <span>Classifica</span>
+      </button>
+      <button class="tab" onclick="showTab('map')" data-tab="map">
+        <span class="tab-icon">🗺</span>
+        <span>Mappa</span>
+      </button>
+    </nav>
+
+    <!-- ===== TAB: MISSIONS ===== -->
+    <section id="tab-missions" class="tab-content active">
+      <div class="section-header">
+        <h2 class="section-title">☘ Mission Log</h2>
+        <p class="section-sub">Completa le missioni per guadagnare XP</p>
+      </div>
+      <ul id="missionsList" class="missions-list"></ul>
+    </section>
+
+    <!-- ===== TAB: BEER ===== -->
+    <section id="tab-beer" class="tab-content">
+      <div class="section-header">
+        <h2 class="section-title">🍺 Guinness Counter</h2>
+        <p class="section-sub">Ogni Guinness vale +2 XP</p>
+      </div>
+
+      <div class="beer-hero">
+        <span class="beer-emoji-big">🍺</span>
+        <div class="beer-count-display" id="myBeerCount">0</div>
+        <p class="beer-count-label">Guinness bevute</p>
+        <div class="beer-btns">
+          <button class="beer-remove-btn" onclick="removeBeer()">↩ -1</button>
+          <button class="beer-add-btn" onclick="addBeer()">+1 GUINNESS</button>
+        </div>
+      </div>
+
+      <h3 class="sub-section-title">🍺 Classifica Guinness</h3>
+      <ul id="beerLeaderboard" class="leaderboard-list"></ul>
+    </section>
+
+    <!-- ===== TAB: LEADERBOARD ===== -->
+    <section id="tab-leaderboard" class="tab-content">
+      <div class="section-header">
+        <h2 class="section-title">🏆 Classifica XP</h2>
+        <p class="section-sub">Chi arriva primo vince gloria eterna</p>
+      </div>
+      <ul id="xpLeaderboard" class="leaderboard-list"></ul>
+
+      <h3 class="sub-section-title">☘ Missioni del Gruppo</h3>
+      <div id="groupPenaltyPanel" class="penalty-panel"></div>
+
+      <h3 class="sub-section-title">🎖 I tuoi Badge</h3>
+      <div id="myBadges"></div>
+    </section>
+
+    <!-- ===== TAB: MAP ===== -->
+    <section id="tab-map" class="tab-content">
+      <div class="section-header">
+        <h2 class="section-title">🗺 Pub di Dublino</h2>
+        <p class="section-sub">Check-in per +5 XP</p>
+      </div>
+      <div id="map"></div>
+    </section>
+
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  </script>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
